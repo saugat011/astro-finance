@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -20,116 +20,138 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { CreditCard, Edit, Eye, MoreHorizontal, TrendingDown } from "lucide-react"
+import { CreditCard, Edit, Eye, MoreHorizontal, TrendingDown, Loader2, AlertCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { formatNepaliCurrency } from "@/lib/format"
 import { AddLoanDialog } from "./add-loan-dialog"
-
-const loansData = [
-  {
-    id: "1",
-    borrower: "Rajesh Kumar",
-    loanType: "flat",
-    amount: 250000,
-    interestRate: 13.5,
-    duration: "36 months",
-    emi: 8450,
-    disburseDate: "2023-03-15",
-    status: "active",
-  },
-  {
-    id: "2",
-    borrower: "Priya Sharma",
-    loanType: "diminishing",
-    amount: 180000,
-    interestRate: 11.75,
-    duration: "24 months",
-    emi: 8625,
-    disburseDate: "2023-04-10",
-    status: "active",
-  },
-  {
-    id: "3",
-    borrower: "Amit Singh",
-    loanType: "flat",
-    amount: 500000,
-    interestRate: 13.5,
-    duration: "48 months",
-    emi: 14583,
-    disburseDate: "2023-05-22",
-    status: "active",
-  },
-  {
-    id: "4",
-    borrower: "Sunita Patel",
-    loanType: "diminishing",
-    amount: 325000,
-    interestRate: 11.75,
-    duration: "36 months",
-    emi: 10747,
-    disburseDate: "2023-06-05",
-    status: "active",
-  },
-  {
-    id: "5",
-    borrower: "Rahul Verma",
-    loanType: "flat",
-    amount: 120000,
-    interestRate: 13.5,
-    duration: "24 months",
-    emi: 6350,
-    disburseDate: "2023-01-15",
-    status: "closed",
-  },
-  {
-    id: "6",
-    borrower: "Deepika Reddy",
-    loanType: "diminishing",
-    amount: 275000,
-    interestRate: 11.75,
-    duration: "30 months",
-    emi: 10868,
-    disburseDate: "2023-07-20",
-    status: "active",
-  },
-]
+import { Loan, LoanStatus, LoanType, PaymentSchedule } from "@/lib/api/types"
+import { loanService } from "@/lib/api/services"
+import { useToast } from "@/components/ui/use-toast"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { format } from "date-fns"
+import { CustomerSelector } from "./customer-selector"
+import { useFormSubmit } from "@/hooks/use-form-submit"
 
 interface LoanManagementTableProps {
-  loanType?: "flat" | "diminishing"
+  loanType?: LoanType
   addLoanOpen?: boolean
   setAddLoanOpen?: (open: boolean) => void
 }
 
 export function LoanManagementTable({ loanType, addLoanOpen = false, setAddLoanOpen }: LoanManagementTableProps) {
-  const [loans, setLoans] = useState(loansData)
+  const [loans, setLoans] = useState<Loan[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [loanToEdit, setLoanToEdit] = useState<any>(null)
+  const [loanToEdit, setLoanToEdit] = useState<Loan | null>(null)
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
-  const [loanToView, setLoanToView] = useState<any>(null)
+  const [loanToView, setLoanToView] = useState<Loan | null>(null)
+  const [paymentSchedule, setPaymentSchedule] = useState<PaymentSchedule[]>([])
+  const [isLoadingSchedule, setIsLoadingSchedule] = useState(false)
+  const { toast } = useToast()
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [pageSize] = useState(10)
 
-  const filteredLoans = loanType ? loans.filter((loan) => loan.loanType === loanType) : loans
+  // Load loans on component mount and when filters change
+  useEffect(() => {
+    fetchLoans()
+  }, [loanType, currentPage, pageSize])
 
-  const handleEditClick = (loan: any) => {
+  const fetchLoans = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      
+      const filters = loanType ? { type: loanType } : undefined
+      const response = await loanService.getLoans(currentPage, pageSize, filters)
+      
+      if (response.success) {
+        setLoans(response.data.items)
+        setTotalPages(response.data.totalPages)
+      }
+    } catch (error) {
+      console.error("Error fetching loans:", error)
+      setError("Failed to load loans. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleEditClick = (loan: Loan) => {
     setLoanToEdit({ ...loan })
     setEditDialogOpen(true)
   }
 
-  const handleViewClick = (loan: any) => {
+  const handleViewClick = async (loan: Loan) => {
     setLoanToView({ ...loan })
     setViewDialogOpen(true)
+    
+    // Fetch payment schedule
+    try {
+      setIsLoadingSchedule(true)
+      const response = await loanService.getPaymentSchedule(loan.id)
+      if (response.success) {
+        setPaymentSchedule(response.data)
+      }
+    } catch (error) {
+      console.error("Error fetching payment schedule:", error)
+      toast({
+        title: "Error",
+        description: "Failed to load payment schedule",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoadingSchedule(false)
+    }
   }
 
-  const saveLoanEdit = () => {
-    // Update the loan in the state
-    setLoans(loans.map((loan) => (loan.id === loanToEdit.id ? loanToEdit : loan)))
-    setEditDialogOpen(false)
-    setLoanToEdit(null)
+  // Form submission handler for editing loans
+  const { handleSubmit: handleEditSubmit, isSubmitting: isEditSubmitting } = useFormSubmit<Partial<Loan>, Loan>(
+    async (data) => {
+      if (!loanToEdit) throw new Error("No loan selected for editing")
+      const response = await loanService.updateLoan(loanToEdit.id, data)
+      return response.data
+    },
+    {
+      onSuccess: (updatedLoan) => {
+        // Update the loan in the state
+        setLoans(loans.map(loan => loan.id === updatedLoan.id ? updatedLoan : loan))
+        setEditDialogOpen(false)
+        setLoanToEdit(null)
+      },
+      successMessage: "Loan updated successfully",
+    }
+  )
+
+  const handleStatusChange = async (loanId: string, status: LoanStatus) => {
+    try {
+      const response = await loanService.updateLoanStatus(loanId, status)
+      if (response.success) {
+        // Update the loan in the state
+        setLoans(loans.map(loan => loan.id === loanId ? response.data : loan))
+        toast({
+          title: "Success",
+          description: `Loan status updated to ${status}`,
+        })
+      }
+    } catch (error) {
+      console.error("Error updating loan status:", error)
+      toast({
+        title: "Error",
+        description: "Failed to update loan status",
+        variant: "destructive",
+      })
+    }
   }
 
-  const handleLoanAdded = (newLoan: any) => {
-    setLoans([...loans, newLoan])
+  const handleLoanAdded = (newLoan: Loan) => {
+    // Refresh the loans list to include the new loan
+    fetchLoans()
   }
 
   return (

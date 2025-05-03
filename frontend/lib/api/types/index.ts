@@ -40,6 +40,31 @@ export interface User {
   role: string;
 }
 
+// Customer types
+export interface Customer {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phoneNumber: string;
+  address?: string;
+  identificationNumber: string;
+  identificationType: string;
+  fullName: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface CreateCustomerRequest {
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phoneNumber: string;
+  address?: string;
+  identificationNumber: string;
+  identificationType: string;
+}
+
 // Loan types
 export interface Loan {
   id: string;
@@ -75,6 +100,18 @@ export interface CreateLoanRequest {
   term: number;
   startDate: string;
   type: LoanType;
+}
+
+export interface PaymentSchedule {
+  id: string;
+  loanId: string;
+  dueDate: string;
+  amount: number;
+  principalAmount: number;
+  interestAmount: number;
+  isPaid: boolean;
+  paymentDate?: string;
+  transactionId?: string;
 }
 
 // Transaction types
