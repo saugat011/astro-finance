@@ -35,7 +35,7 @@ namespace AstroFinance.Application.Customers.Commands.DeleteCustomer
 
             // Check if customer has any active loans
             var hasActiveLoans = await _context.Loans
-                .Where(l => l.CustomerId == request.Id && (l.Status == Domain.Loans.Enums.LoanStatus.Active || l.Status == Domain.Loans.Enums.LoanStatus.Pending))
+                .Where(l => l.CustomerId.ToString() == request.Id.ToString() && (l.Status == Domain.Loans.Enums.LoanStatus.Active || l.Status == Domain.Loans.Enums.LoanStatus.Pending))
                 .AnyAsync(cancellationToken);
 
             if (hasActiveLoans)

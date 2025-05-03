@@ -70,7 +70,7 @@ namespace AstroFinance.Infrastructure.Identity
             };
 
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(default);
 
             return (Result.Success(), user.Id.ToString());
         }
@@ -84,7 +84,7 @@ namespace AstroFinance.Infrastructure.Identity
             }
 
             user.IsActive = false;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(default);
 
             return Result.Success();
         }
@@ -109,7 +109,7 @@ namespace AstroFinance.Infrastructure.Identity
 
             // Update last login date
             user.LastLoginDate = _dateTime.Now;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(default);
 
             // Generate JWT token
             var token = GenerateJwtToken(user);
