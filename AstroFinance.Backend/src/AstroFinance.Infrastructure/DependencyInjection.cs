@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AstroFinance.Infrastructure.Sms;
 
 namespace AstroFinance.Infrastructure;
 
@@ -28,6 +29,9 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IIdentityService, IdentityService>();
+
+        // Register SmsService as implementation of ISmsService
+        services.AddTransient<ISmsService, SmsService>();
 
         // Add JWT Authentication
         var jwtSettings = configuration.GetSection("JwtSettings");

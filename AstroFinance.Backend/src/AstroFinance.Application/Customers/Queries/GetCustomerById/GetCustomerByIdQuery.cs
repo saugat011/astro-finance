@@ -37,15 +37,15 @@ namespace AstroFinance.Application.Customers.Queries.GetCustomerById
 
             // Get loan count
             var loanCount = await _context.Loans
-                .CountAsync(l => l.CustomerId == request.Id, cancellationToken);
+                .CountAsync(l => l.CustomerId.ToString() == request.Id.ToString(), cancellationToken);
 
             // Get active loan count
             var activeLoanCount = await _context.Loans
-                .CountAsync(l => l.CustomerId == request.Id && l.Status == Domain.Loans.Enums.LoanStatus.Active, cancellationToken);
+                .CountAsync(l => l.CustomerId.ToString() == request.Id.ToString() && l.Status == Domain.Loans.Enums.LoanStatus.Active, cancellationToken);
 
             // Get total loan amount
             var totalLoanAmount = await _context.Loans
-                .Where(l => l.CustomerId == request.Id)
+                .Where(l => l.CustomerId.ToString() == request.Id.ToString())
                 .SumAsync(l => l.Amount, cancellationToken);
 
             return new CustomerDetailDto
@@ -58,7 +58,7 @@ namespace AstroFinance.Application.Customers.Queries.GetCustomerById
                 Address = entity.Address,
                 IdentificationNumber = entity.IdentificationNumber,
                 IdentificationType = entity.IdentificationType,
-                CreatedAt = entity.CreatedAt,
+                CreatedAt = entity.Created,
                 LoanCount = loanCount,
                 ActiveLoanCount = activeLoanCount,
                 TotalLoanAmount = totalLoanAmount

@@ -30,7 +30,7 @@ namespace AstroFinance.API.Controllers
         public async Task<IActionResult> Create(CreateTransactionCommand command)
         {
             var result = await Mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = result }, result);
         }
 
         [HttpDelete("{id}")]

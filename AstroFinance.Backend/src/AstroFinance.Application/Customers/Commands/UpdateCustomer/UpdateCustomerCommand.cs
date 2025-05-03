@@ -47,7 +47,7 @@ namespace AstroFinance.Application.Customers.Commands.UpdateCustomer
             entity.Address = request.Address;
             entity.IdentificationNumber = request.IdentificationNumber;
             entity.IdentificationType = request.IdentificationType;
-            entity.LastModifiedBy = Guid.Parse(_currentUserService.UserId ?? Guid.Empty.ToString());
+            entity.LastModifiedBy = _currentUserService.UserId ?? Guid.Empty.ToString();
 
             await _context.SaveChangesAsync(cancellationToken);
         }

@@ -13,6 +13,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using BC = BCrypt.Net.BCrypt;
+using AstroFinance.Application.Users.Queries.GetUsersList;
 
 namespace AstroFinance.Infrastructure.Identity
 {
@@ -70,7 +71,7 @@ namespace AstroFinance.Infrastructure.Identity
             };
 
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(default);
 
             return (Result.Success(), user.Id.ToString());
         }
@@ -84,7 +85,7 @@ namespace AstroFinance.Infrastructure.Identity
             }
 
             user.IsActive = false;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(default);
 
             return Result.Success();
         }
@@ -109,7 +110,7 @@ namespace AstroFinance.Infrastructure.Identity
 
             // Update last login date
             user.LastLoginDate = _dateTime.Now;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(default);
 
             // Generate JWT token
             var token = GenerateJwtToken(user);
@@ -164,6 +165,87 @@ namespace AstroFinance.Infrastructure.Identity
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
+        }
+        public async Task<(List<UserDto> Users, int TotalCount)> GetUsersAsync(string? searchTerm, int pageNumber, int pageSize, System.Threading.CancellationToken cancellationToken)
+        {
+            var query = _context.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(u => u.Email.Contains(searchTerm) || u.FirstName.Contains(searchTerm) || u.LastName.Contains(searchTerm));
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var users = await query
+                .OrderBy(u => u.Email)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    UserName = u.Email,
+                    Email = u.Email,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName
+                })
+                .ToListAsync(cancellationToken);
+
+            return (users, totalCount);
+        }
+
+        public async Task<UserDto?> GetUserByIdAsync(Guid userId, System.Threading.CancellationToken cancellationToken)
+        {
+            var user = await _context.Users
+                .Where(u => u.Id == userId)
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    UserName = u.Email,
+                    Email = u.Email,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName
+                })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return user;
+        }
+
+        public async Task<Result> UpdateUserAsync(Guid userId, string email, string firstName, string lastName, List<string> roles, bool isActive, System.Threading.CancellationToken cancellationToken)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+            if (user == null)
+            {
+                return Result.Failure("User not found.");
+            }
+
+            user.Email = email;
+            user.FirstName = firstName;
+            user.LastName = lastName;
+            user.IsActive = isActive;
+            // Assuming roles is a list of role names, update user role accordingly
+            if (roles != null && roles.Count > 0)
+            {
+                user.Role = roles[0]; // Simplified: assign the first role
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
+        }
+
+        public async Task<Result> DeleteUserAsync(Guid userId, System.Threading.CancellationToken cancellationToken)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+            if (user == null)
+            {
+                return Result.Failure("User not found.");
+            }
+
+            user.IsActive = false;
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
         }
     }
 }
