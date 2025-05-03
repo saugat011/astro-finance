@@ -9,10 +9,13 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Loader2 } from "lucide-react"
+import { useAuth } from "@/lib/context/auth-context"
+import { useToast } from "@/components/ui/use-toast"
+import { getErrorMessage } from "@/lib/utils/api-utils"
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  email: z.string().email({
+    message: "Please enter a valid email address.",
   }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
@@ -21,25 +24,33 @@ const formSchema = z.object({
 
 export function LoginForm() {
   const router = useRouter()
+  const { login, isLoading: authLoading } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
+  const { toast } = useToast()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log(values)
-      setIsLoading(false)
+    try {
+      await login(values.email, values.password)
       router.push("/dashboard")
-    }, 1000)
+    } catch (error) {
+      toast({
+        title: "Login failed",
+        description: getErrorMessage(error),
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -48,12 +59,12 @@ export function LoginForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="username"
+            name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="admin" {...field} />
+                  <Input type="email" placeholder="admin@example.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -72,8 +83,8 @@ export function LoginForm() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
+          <Button type="submit" className="w-full" disabled={isLoading || authLoading}>
+            {isLoading || authLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Logging in...
@@ -92,7 +103,7 @@ export function LoginForm() {
           <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
+      <Button variant="outline" type="button" disabled={isLoading || authLoading}>
         Forgot Password?
       </Button>
     </div>
