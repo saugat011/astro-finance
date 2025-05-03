@@ -42,15 +42,9 @@ test-results/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
-*.suo
-*.ntvs*
-*.njsproj
 
-*.sw?
 .vs/
-*~
-*.swp
-*.swo
+
 
 # OS files
 .DS_Store
@@ -70,7 +64,6 @@ temp/
 .cache/
 
 # .NET specific
-*.dll
 *.exe
 *.pdb
 *.user
@@ -92,7 +85,6 @@ temp/
 [Ll]og/
 [Ll]ogs/
 .vs/
-_ReSharper*/
 
 # Misc
 .vercel
