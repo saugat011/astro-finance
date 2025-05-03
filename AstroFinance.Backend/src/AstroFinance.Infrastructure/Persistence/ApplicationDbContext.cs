@@ -59,13 +59,13 @@ namespace AstroFinance.Infrastructure.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = Guid.Parse(_currentUserService.UserId ?? Guid.Empty.ToString());
-                        entry.Entity.CreatedAt = _dateTime.Now;
+                        entry.Entity.CreatedBy = _currentUserService.UserId ?? Guid.Empty.ToString();
+                        entry.Entity.Created = _dateTime.Now;
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.LastModifiedBy = Guid.Parse(_currentUserService.UserId ?? Guid.Empty.ToString());
-                        entry.Entity.LastModifiedAt = _dateTime.Now;
+                        entry.Entity.LastModifiedBy = _currentUserService.UserId ?? Guid.Empty.ToString();
+                        entry.Entity.LastModified = _dateTime.Now;
                         break;
                 }
             }

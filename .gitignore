@@ -38,18 +38,12 @@ test-results/
 # IDE and editors
 .idea/
 .vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
+
 
 .vs/
 
 
-# OS files
-.DS_Store
-Thumbs.db
-desktop.ini
+
 
 # Database
 *.sqlite
@@ -63,28 +57,6 @@ tmp/
 temp/
 .cache/
 
-# .NET specific
-*.exe
-*.pdb
-*.user
-*.aps
-*.pch
-*.vspscc
-*_i.c
-*_p.c
-*.ncb
-*.tlb
-*.tlh
-*.bak
-*.cache
-*.ilk
-*.lib
-*.sbr
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-[Ll]ogs/
-.vs/
 
 # Misc
 .vercel

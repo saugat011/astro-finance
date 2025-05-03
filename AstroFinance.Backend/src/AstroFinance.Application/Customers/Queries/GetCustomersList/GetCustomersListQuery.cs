@@ -48,7 +48,7 @@ namespace AstroFinance.Application.Customers.Queries.GetCustomersList
 
             // Apply pagination
             var customers = await query
-                .OrderByDescending(c => c.CreatedAt)
+                .OrderByDescending(c => c.Created)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .Select(c => new CustomerDto
@@ -61,7 +61,7 @@ namespace AstroFinance.Application.Customers.Queries.GetCustomersList
                     Address = c.Address,
                     IdentificationNumber = c.IdentificationNumber,
                     IdentificationType = c.IdentificationType,
-                    CreatedAt = c.CreatedAt
+                    CreatedAt = c.Created
                 })
                 .ToListAsync(cancellationToken);
 
