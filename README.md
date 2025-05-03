@@ -59,6 +59,8 @@ The application uses PostgreSQL for data storage:
    psql -U postgres -d astrofinance -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
    ```
 
+**Note:** This project uses direct SQL migrations rather than Entity Framework migrations. You do not need to run `dotnet ef database update` or similar commands. The database schema is managed entirely through the SQL scripts in the `database/migrations` directory.
+
 ### 3. Backend Setup
 
 1. Navigate to the backend directory:
@@ -172,6 +174,7 @@ The application uses PostgreSQL for data storage:
 - Verify PostgreSQL is running: `pg_isready`
 - Check connection string in `appsettings.Development.json`
 - Ensure the database user has appropriate permissions
+- If you see Entity Framework errors, remember that this project uses direct SQL migrations. Run the `./migrate.sh` script in the `database` directory instead of EF migrations
 
 ### API Not Starting
 
