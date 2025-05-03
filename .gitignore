@@ -45,7 +45,7 @@ test-results/
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
+
 *.sw?
 .vs/
 *~
