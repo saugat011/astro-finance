@@ -61,6 +61,8 @@ desktop.ini
 *.sqlite
 *.sqlite3
 *.db
+backups/
+
 
 # Temporary files
 tmp/
