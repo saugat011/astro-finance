@@ -48,7 +48,7 @@ namespace AstroFinance.Application.Loans.Commands.CreateLoan
                 Type = LoanType.Flat, // Default to Flat rate
                 StartDate = _dateTime.Now,
                 EndDate = _dateTime.Now.AddMonths(request.Term),
-                CreatedBy = _currentUserService.UserId ?? Guid.Empty.ToString()
+                CreatedBy = _currentUserService.UserId ?? Guid.Empty
             };
 
             _context.Loans.Add(entity);
@@ -67,7 +67,7 @@ namespace AstroFinance.Application.Loans.Commands.CreateLoan
                 InterestRate = entity.InterestRate,
                 Term = entity.Term,
                 Status = entity.Status.ToString(),
-                Created = entity.Created
+                Created = entity.CreatedAt
             };
         }
 

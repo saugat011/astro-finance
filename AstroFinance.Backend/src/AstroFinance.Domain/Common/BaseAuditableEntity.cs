@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace AstroFinance.Domain.Common;
 
 /// <summary>
@@ -5,11 +7,15 @@ namespace AstroFinance.Domain.Common;
 /// </summary>
 public abstract class BaseAuditableEntity : BaseEntity
 {
-    public DateTime Created { get; set; }
+    [Column("created_at")]  // Explicit column mapping
+    public DateTime CreatedAt { get; set; }
     
-    public string? CreatedBy { get; set; }
+    [Column("created_by")]
+    public Guid? CreatedBy { get; set; }
     
-    public DateTime? LastModified { get; set; }
+    [Column("last_modified_at")]
+    public DateTime? LastModifiedAt { get; set; }
     
-    public string? LastModifiedBy { get; set; }
+    [Column("last_modified_by")]
+    public Guid? LastModifiedBy { get; set; }
 }

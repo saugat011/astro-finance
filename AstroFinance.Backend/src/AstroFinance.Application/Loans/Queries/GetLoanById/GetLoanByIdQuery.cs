@@ -55,7 +55,7 @@ namespace AstroFinance.Application.Loans.Queries.GetLoanById
                 Status = entity.Status.ToString(),
                 StartDate = entity.StartDate,
                 EndDate = entity.EndDate,
-                Created = entity.Created,
+                Created = entity.CreatedAt,
                 PaymentCount = paymentCount,
                 TotalPaidAmount = totalPaidAmount,
                 RemainingAmount = entity.Amount - totalPaidAmount

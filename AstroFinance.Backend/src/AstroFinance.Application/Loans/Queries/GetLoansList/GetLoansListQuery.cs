@@ -60,7 +60,7 @@ namespace AstroFinance.Application.Loans.Queries.GetLoansList
 
             // Apply pagination
             var loans = await query
-                .OrderByDescending(l => l.Created)
+                .OrderByDescending(l => l.CreatedAt)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .Select(l => new LoanDto
@@ -74,7 +74,7 @@ namespace AstroFinance.Application.Loans.Queries.GetLoansList
                     Status = l.Status.ToString(),
                     StartDate = l.StartDate,
                     EndDate = l.EndDate,
-                    Created = l.Created
+                    Created = l.CreatedAt
                 })
                 .ToListAsync(cancellationToken);
 

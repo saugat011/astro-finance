@@ -42,7 +42,7 @@ namespace AstroFinance.Application.Loans.Commands.ApproveLoan
             }
 
             entity.Status = Domain.Loans.Enums.LoanStatus.Active;
-            entity.LastModifiedBy = _currentUserService.UserId ?? Guid.Empty.ToString();
+            entity.LastModifiedBy = _currentUserService.UserId ?? Guid.Empty;
 
             await _context.SaveChangesAsync(cancellationToken);
         }
