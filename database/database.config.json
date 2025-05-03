@@ -1,65 +1,65 @@
 {
   "development": {
-    "host": "localhost",
-    "port": 5432,
-    "database": "astrofinance_dev",
-    "username": "postgres",
-    "password": "postgres",
-    "poolSize": 10,
-    "idleTimeoutMillis": 30000,
-    "connectionTimeoutMillis": 2000,
-    "ssl": false
+    "host": "${DB_HOST:-localhost}",
+    "port": "${DB_PORT:-5432}",
+    "database": "${DB_NAME:-astrofinance_dev}",
+    "username": "${DB_USER:-postgres}",
+    "password": "${DB_PASSWORD:-postgres}",
+    "poolSize": "${DB_POOL_SIZE:-10}",
+    "idleTimeoutMillis": "${DB_IDLE_TIMEOUT:-30000}",
+    "connectionTimeoutMillis": "${DB_CONN_TIMEOUT:-2000}",
+    "ssl": "${DB_SSL:-false}"
   },
   "test": {
-    "host": "localhost",
-    "port": 5432,
-    "database": "astrofinance_test",
-    "username": "postgres",
-    "password": "postgres",
-    "poolSize": 5,
-    "idleTimeoutMillis": 30000,
-    "connectionTimeoutMillis": 2000,
-    "ssl": false
+    "host": "${TEST_DB_HOST:-localhost}",
+    "port": "${TEST_DB_PORT:-5432}",
+    "database": "${TEST_DB_NAME:-astrofinance_test}",
+    "username": "${TEST_DB_USER:-postgres}",
+    "password": "${TEST_DB_PASSWORD:-postgres}",
+    "poolSize": "${TEST_DB_POOL_SIZE:-5}",
+    "idleTimeoutMillis": "${TEST_DB_IDLE_TIMEOUT:-30000}",
+    "connectionTimeoutMillis": "${TEST_DB_CONN_TIMEOUT:-2000}",
+    "ssl": "${TEST_DB_SSL:-false}"
   },
   "production": {
-    "host": "#{DB_HOST}#",
-    "port": "#{DB_PORT}#",
-    "database": "#{DB_NAME}#",
-    "username": "#{DB_USER}#",
-    "password": "#{DB_PASSWORD}#",
-    "poolSize": 20,
-    "idleTimeoutMillis": 30000,
-    "connectionTimeoutMillis": 5000,
-    "ssl": true
+    "host": "${PROD_DB_HOST}",
+    "port": "${PROD_DB_PORT}",
+    "database": "${PROD_DB_NAME}",
+    "username": "${PROD_DB_USER}",
+    "password": "${PROD_DB_PASSWORD}",
+    "poolSize": "${PROD_DB_POOL_SIZE:-20}",
+    "idleTimeoutMillis": "${PROD_DB_IDLE_TIMEOUT:-30000}",
+    "connectionTimeoutMillis": "${PROD_DB_CONN_TIMEOUT:-5000}",
+    "ssl": "${PROD_DB_SSL:-true}"
   },
   "backup": {
-    "enabled": true,
-    "schedule": "0 0 * * *", 
+    "enabled": "${BACKUP_ENABLED:-true}",
+    "schedule": "${BACKUP_SCHEDULE:-0 0 * * *}", 
     "retention": {
-      "days": 30,
-      "count": 10
+      "days": "${BACKUP_RETENTION_DAYS:-30}",
+      "count": "${BACKUP_RETENTION_COUNT:-10}"
     },
-    "path": "/backups"
+    "path": "${BACKUP_PATH:-/backups}"
   },
   "monitoring": {
-    "enabled": true,
-    "slowQueryThreshold": 1000,
-    "logQueries": false,
-    "logQueryParameters": false
+    "enabled": "${MONITORING_ENABLED:-true}",
+    "slowQueryThreshold": "${SLOW_QUERY_THRESHOLD:-1000}",
+    "logQueries": "${LOG_QUERIES:-false}",
+    "logQueryParameters": "${LOG_QUERY_PARAMS:-false}"
   },
   "maintenance": {
     "vacuum": {
-      "enabled": true,
-      "schedule": "0 2 * * 0", 
+      "enabled": "${VACUUM_ENABLED:-true}",
+      "schedule": "${VACUUM_SCHEDULE:-0 2 * * 0}", 
       "tables": ["transactions", "audit_logs"]
     },
     "reindex": {
-      "enabled": true,
-      "schedule": "0 3 * * 0" 
+      "enabled": "${REINDEX_ENABLED:-true}",
+      "schedule": "${REINDEX_SCHEDULE:-0 3 * * 0}" 
     },
     "refreshViews": {
-      "enabled": true,
-      "schedule": "0 1 * * *" 
+      "enabled": "${REFRESH_VIEWS_ENABLED:-true}",
+      "schedule": "${REFRESH_VIEWS_SCHEDULE:-0 1 * * *}" 
     }
   }
 }

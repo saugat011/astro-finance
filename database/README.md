@@ -177,24 +177,38 @@ The database includes a backup function that can be scheduled to run regularly. 
 
 ## Installation and Setup
 
-1. Create a PostgreSQL database:
-   ```sql
-   CREATE DATABASE astrofinance;
-   ```
+### Environment Configuration
 
-2. Connect to the database:
+1. Copy the example environment file:
    ```bash
-   psql -U your_username -d astrofinance
+   cp .env.example .env
    ```
 
-3. Run the schema.sql script:
+2. Edit the `.env` file with your database credentials:
    ```bash
-   \i /path/to/schema.sql
+   # Update these values with your PostgreSQL credentials
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=astrofinance
+   DB_USER=postgres
+   DB_PASSWORD=your_password_here
    ```
 
-4. Verify installation:
-   ```sql
-   SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';
+### Database Setup
+
+1. Create a PostgreSQL database using the migration script:
+   ```bash
+   ./migrate.sh --create
+   ```
+
+2. Seed the database with initial data:
+   ```bash
+   ./seed.sh
+   ```
+
+3. Verify installation:
+   ```bash
+   psql -U $DB_USER -h $DB_HOST -d $DB_NAME -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
    ```
 
 ## Maintenance Tasks

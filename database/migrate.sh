@@ -3,11 +3,37 @@
 # AstroFinance Database Migration Script
 # This script applies database migrations in order
 
-# Configuration
-DB_NAME="astrofinance"
-DB_USER="postgres"
-MIGRATIONS_DIR="./migrations"
-SCHEMA_VERSION_TABLE="schema_version"
+# Load environment variables from .env file if it exists
+if [ -f .env ]; then
+    echo "Loading environment variables from .env file"
+    export $(grep -v '^#' .env | xargs)
+fi
+
+# Configuration with environment variable support
+DB_NAME=${DB_NAME:-astrofinance}
+DB_USER=${DB_USER:-postgres}
+DB_PASSWORD=${DB_PASSWORD:-}
+DB_HOST=${DB_HOST:-localhost}
+DB_PORT=${DB_PORT:-5432}
+MIGRATIONS_DIR=${MIGRATIONS_DIR:-./migrations}
+SCHEMA_VERSION_TABLE=${SCHEMA_VERSION_TABLE:-schema_version}
+
+# Password argument for psql (empty if no password)
+if [ -n "$DB_PASSWORD" ]; then
+    PGPASSWORD="$DB_PASSWORD"
+    export PGPASSWORD
+fi
+
+# Host and port arguments for psql
+DB_HOST_ARG=""
+if [ -n "$DB_HOST" ]; then
+    DB_HOST_ARG="-h $DB_HOST"
+fi
+
+DB_PORT_ARG=""
+if [ -n "$DB_PORT" ]; then
+    DB_PORT_ARG="-p $DB_PORT"
+fi
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -76,12 +102,12 @@ fi
 
 # Function to check if database exists
 function database_exists {
-    psql -U "$DB_USER" -lqt | cut -d \| -f 1 | grep -qw "$DB_NAME"
+    psql $DB_HOST_ARG $DB_PORT_ARG -U "$DB_USER" -lqt | cut -d \| -f 1 | grep -qw "$DB_NAME"
 }
 
 # Function to create schema version table if it doesn't exist
 function create_schema_version_table {
-    psql -U "$DB_USER" -d "$DB_NAME" -c "
+    psql $DB_HOST_ARG $DB_PORT_ARG -U "$DB_USER" -d "$DB_NAME" -c "
         CREATE TABLE IF NOT EXISTS $SCHEMA_VERSION_TABLE (
             id SERIAL PRIMARY KEY,
             version VARCHAR(100) NOT NULL,
@@ -94,7 +120,7 @@ function create_schema_version_table {
 # Function to check if migration has been applied
 function migration_applied {
     local version=$1
-    local result=$(psql -U "$DB_USER" -d "$DB_NAME" -t -c "
+    local result=$(psql $DB_HOST_ARG $DB_PORT_ARG -U "$DB_USER" -d "$DB_NAME" -t -c "
         SELECT COUNT(*) FROM $SCHEMA_VERSION_TABLE WHERE version = '$version';
     ")
     
@@ -110,7 +136,7 @@ function record_migration {
     local version=$1
     local description=$2
     
-    psql -U "$DB_USER" -d "$DB_NAME" -c "
+    psql $DB_HOST_ARG $DB_PORT_ARG -U "$DB_USER" -d "$DB_NAME" -c "
         INSERT INTO $SCHEMA_VERSION_TABLE (version, description)
         VALUES ('$version', '$description');
     "
@@ -122,7 +148,7 @@ function backup_database {
     local backup_file="backup_${DB_NAME}_${timestamp}.sql"
     
     echo -e "${YELLOW}Backing up database to $backup_file...${NC}"
-    pg_dump -U "$DB_USER" -d "$DB_NAME" -f "$backup_file"
+    pg_dump $DB_HOST_ARG $DB_PORT_ARG -U "$DB_USER" -d "$DB_NAME" -f "$backup_file"
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Backup completed successfully.${NC}"
@@ -137,14 +163,14 @@ if [ "$RESET_DB" = true ]; then
     echo -e "${YELLOW}Resetting database $DB_NAME...${NC}"
     
     if database_exists; then
-        psql -U "$DB_USER" -c "DROP DATABASE $DB_NAME;"
+        psql $DB_HOST_ARG $DB_PORT_ARG -U "$DB_USER" -c "DROP DATABASE $DB_NAME;"
     fi
     
-    psql -U "$DB_USER" -c "CREATE DATABASE $DB_NAME;"
+    psql $DB_HOST_ARG $DB_PORT_ARG -U "$DB_USER" -c "CREATE DATABASE $DB_NAME;"
     echo -e "${GREEN}Database reset completed.${NC}"
 elif [ "$CREATE_DB" = true ] && ! database_exists; then
     echo -e "${YELLOW}Creating database $DB_NAME...${NC}"
-    psql -U "$DB_USER" -c "CREATE DATABASE $DB_NAME;"
+    psql $DB_HOST_ARG $DB_PORT_ARG -U "$DB_USER" -c "CREATE DATABASE $DB_NAME;"
     echo -e "${GREEN}Database created.${NC}"
 elif ! database_exists; then
     echo -e "${RED}Error: Database $DB_NAME does not exist.${NC}"
@@ -177,7 +203,7 @@ for file in $migration_files; do
         echo -e "${YELLOW}Applying migration V$version: $description...${NC}"
         
         # Apply migration
-        psql -U "$DB_USER" -d "$DB_NAME" -f "$file"
+        psql $DB_HOST_ARG $DB_PORT_ARG -U "$DB_USER" -d "$DB_NAME" -f "$file"
         
         if [ $? -eq 0 ]; then
             # Record migration
@@ -193,7 +219,7 @@ done
 echo -e "${GREEN}All migrations applied successfully.${NC}"
 
 # Show current schema version
-current_version=$(psql -U "$DB_USER" -d "$DB_NAME" -t -c "
+current_version=$(psql $DB_HOST_ARG $DB_PORT_ARG -U "$DB_USER" -d "$DB_NAME" -t -c "
     SELECT version FROM $SCHEMA_VERSION_TABLE ORDER BY id DESC LIMIT 1;
 ")
 

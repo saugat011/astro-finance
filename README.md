@@ -27,7 +27,7 @@ Follow these steps to set up the complete Astro Finance application:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/astro-finance.git
+git clone https://github.com/notcool100/astro-finance.git
 cd astro-finance
 ```
 
@@ -54,12 +54,48 @@ The application uses PostgreSQL for data storage:
    - Use `--reset` to drop and recreate the database
    - Use `--backup` to create a backup before migrations
 
-3. Verify the database setup:
+3. Seed the database with initial data:
+   ```bash
+   ./seed.sh
+   ```
+   
+   This script will:
+   - Populate the database with sample data for development and testing
+   - Create default users, customers, loans, and transactions
+   - Set up SMS templates and other required data
+   - Display a summary of the seeded data
+
+   **Options:**
+   - Use `--user yourusername` to specify a different PostgreSQL user
+   - Use `--database dbname` to specify a different database name
+
+4. Verify the database setup:
    ```bash
    psql -U postgres -d astrofinance -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
    ```
 
 **Note:** This project uses direct SQL migrations rather than Entity Framework migrations. You do not need to run `dotnet ef database update` or similar commands. The database schema is managed entirely through the SQL scripts in the `database/migrations` directory.
+
+#### Additional Database Management Scripts
+
+The project includes several scripts for database management:
+
+- **backup.sh**: Creates a backup of the database
+  ```bash
+  ./backup.sh
+  ```
+
+- **restore.sh**: Restores the database from a backup
+  ```bash
+  ./restore.sh backup_filename.sql
+  ```
+
+- **maintenance.sh**: Performs routine database maintenance (VACUUM, ANALYZE, etc.)
+  ```bash
+  ./maintenance.sh
+  ```
+
+These scripts support environment variables and command-line arguments for customization. Run any script with `--help` to see available options.
 
 ### 3. Backend Setup
 
@@ -149,9 +185,11 @@ The application uses PostgreSQL for data storage:
 
 - **Frontend**: Open your browser and navigate to `http://localhost:3000`
 - **API Documentation**: Swagger UI is available at `http://localhost:5000/swagger`
-- **Default Admin Account**:
+- **Default Admin Account** (created during database seeding):
   - Email: admin@astrofinance.com
   - Password: Admin123!
+  
+  Additional test accounts may also be available depending on the seed data. Check the `seed.sql` file for details.
 
 ## Development Workflow
 
@@ -175,6 +213,13 @@ The application uses PostgreSQL for data storage:
 - Check connection string in `appsettings.Development.json`
 - Ensure the database user has appropriate permissions
 - If you see Entity Framework errors, remember that this project uses direct SQL migrations. Run the `./migrate.sh` script in the `database` directory instead of EF migrations
+
+### Database Seeding Issues
+
+- If you encounter errors during seeding, check the PostgreSQL logs for detailed error messages
+- Ensure you've run the migrations first with `./migrate.sh` before running `./seed.sh`
+- If you need to reset the database and start fresh, use `./migrate.sh --reset` followed by `./seed.sh`
+- For permission errors, ensure your PostgreSQL user has the necessary privileges
 
 ### API Not Starting
 
