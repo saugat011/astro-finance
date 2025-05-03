@@ -1,0 +1,65 @@
+{
+  "development": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "astrofinance_dev",
+    "username": "postgres",
+    "password": "postgres",
+    "poolSize": 10,
+    "idleTimeoutMillis": 30000,
+    "connectionTimeoutMillis": 2000,
+    "ssl": false
+  },
+  "test": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "astrofinance_test",
+    "username": "postgres",
+    "password": "postgres",
+    "poolSize": 5,
+    "idleTimeoutMillis": 30000,
+    "connectionTimeoutMillis": 2000,
+    "ssl": false
+  },
+  "production": {
+    "host": "#{DB_HOST}#",
+    "port": "#{DB_PORT}#",
+    "database": "#{DB_NAME}#",
+    "username": "#{DB_USER}#",
+    "password": "#{DB_PASSWORD}#",
+    "poolSize": 20,
+    "idleTimeoutMillis": 30000,
+    "connectionTimeoutMillis": 5000,
+    "ssl": true
+  },
+  "backup": {
+    "enabled": true,
+    "schedule": "0 0 * * *", 
+    "retention": {
+      "days": 30,
+      "count": 10
+    },
+    "path": "/backups"
+  },
+  "monitoring": {
+    "enabled": true,
+    "slowQueryThreshold": 1000,
+    "logQueries": false,
+    "logQueryParameters": false
+  },
+  "maintenance": {
+    "vacuum": {
+      "enabled": true,
+      "schedule": "0 2 * * 0", 
+      "tables": ["transactions", "audit_logs"]
+    },
+    "reindex": {
+      "enabled": true,
+      "schedule": "0 3 * * 0" 
+    },
+    "refreshViews": {
+      "enabled": true,
+      "schedule": "0 1 * * *" 
+    }
+  }
+}
