@@ -1,7 +1,8 @@
 {
-  "name": "my-v0-project",
+  "name": "astro-finance-frontend",
   "version": "0.1.0",
   "private": true,
+  "description": "Frontend for Astro Finance - A modern financial management system for microfinance institutions",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
