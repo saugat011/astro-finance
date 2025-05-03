@@ -93,8 +93,6 @@ temp/
 [Ll]ogs/
 .vs/
 _ReSharper*/
-*.[Rr]e[Ss]harper
-*.DotSettings.user
 
 # Misc
 .vercel
