@@ -43,7 +43,7 @@ namespace AstroFinance.Application.Sms.Commands.UpdateSmsTemplate
 
             entity.Name = request.Name;
             entity.Content = request.Content;
-            entity.LastModified = _dateTime.Now;
+            entity.LastModifiedAt = _dateTime.Now;
             entity.LastModifiedBy = _currentUserService.UserId;
 
             await _context.SaveChangesAsync(cancellationToken);

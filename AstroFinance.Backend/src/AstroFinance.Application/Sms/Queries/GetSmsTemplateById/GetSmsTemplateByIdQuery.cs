@@ -39,9 +39,9 @@ namespace AstroFinance.Application.Sms.Queries.GetSmsTemplateById
                 Id = template.Id,
                 Name = template.Name,
                 Content = template.Content,
-                Created = template.Created,
+                CreatedAt = template.CreatedAt,
                 CreatedBy = template.CreatedBy,
-                LastModified = template.LastModified,
+                LastModifiedAt = template.LastModifiedAt,
                 LastModifiedBy = template.LastModifiedBy
             };
         }

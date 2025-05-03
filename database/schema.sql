@@ -270,14 +270,14 @@ DECLARE
     old_row JSONB := NULL;
     new_row JSONB := NULL;
 BEGIN
-    IF (TG_OP = 'UPDATE' OR TG_OP = 'DELETE') THEN
-        old_row = row_to_json(OLD)::JSONB;
+    IF TG_OP IN ('UPDATE', 'DELETE') THEN
+        old_row := to_jsonb(OLD);
     END IF;
-    
-    IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-        new_row = row_to_json(NEW)::JSONB;
+
+    IF TG_OP IN ('INSERT', 'UPDATE') THEN
+        new_row := to_jsonb(NEW);
     END IF;
-    
+
     INSERT INTO audit_logs (
         table_name,
         record_id,
@@ -301,7 +301,7 @@ BEGIN
         END,
         CURRENT_TIMESTAMP
     );
-    
+
     RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;

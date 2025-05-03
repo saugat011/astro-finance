@@ -40,7 +40,7 @@ namespace AstroFinance.Application.Customers.Commands.CreateCustomer
                 Address = request.Address,
                 IdentificationNumber = request.IdentificationNumber,
                 IdentificationType = request.IdentificationType,
-                CreatedBy = _currentUserService.UserId ?? Guid.Empty.ToString()
+                CreatedBy = _currentUserService.UserId ?? Guid.Empty
             };
 
             _context.Customers.Add(entity);
@@ -56,7 +56,7 @@ namespace AstroFinance.Application.Customers.Commands.CreateCustomer
                 Address = entity.Address,
                 IdentificationNumber = entity.IdentificationNumber,
                 IdentificationType = entity.IdentificationType,
-                CreatedAt = entity.Created
+                CreatedAt = entity.CreatedAt
             };
         }
     }

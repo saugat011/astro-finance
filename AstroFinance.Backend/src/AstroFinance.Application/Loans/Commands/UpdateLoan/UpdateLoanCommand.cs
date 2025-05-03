@@ -49,7 +49,7 @@ namespace AstroFinance.Application.Loans.Commands.UpdateLoan
             entity.InterestRate = request.InterestRate;
             entity.Term = request.Term;
             // No description field in Loan entity
-            entity.LastModifiedBy = _currentUserService.UserId ?? Guid.Empty.ToString();
+            entity.LastModifiedBy = _currentUserService.UserId ?? Guid.Empty;
 
             await _context.SaveChangesAsync(cancellationToken);
         }

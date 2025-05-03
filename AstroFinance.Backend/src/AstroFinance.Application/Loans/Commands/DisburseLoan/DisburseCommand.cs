@@ -54,7 +54,7 @@ namespace AstroFinance.Application.Loans.Commands.DisburseLoan
             loan.Status = Domain.Loans.Enums.LoanStatus.Active;
             loan.StartDate = now;
             loan.EndDate = now.AddMonths(loan.Term);
-            loan.LastModifiedBy = _currentUserService.UserId ?? Guid.Empty.ToString();
+            loan.LastModifiedBy = _currentUserService.UserId ?? Guid.Empty;
 
             // Create disbursement transaction
             var transaction = new Transaction
@@ -65,7 +65,7 @@ namespace AstroFinance.Application.Loans.Commands.DisburseLoan
                 Amount = loan.Amount,
                 Date = now,
                 Description = $"Loan disbursement for loan ID {loan.Id}",
-                CreatedBy = _currentUserService.UserId ?? Guid.Empty.ToString()
+                CreatedBy = _currentUserService.UserId ?? Guid.Empty
             };
 
             _context.Transactions.Add(transaction);

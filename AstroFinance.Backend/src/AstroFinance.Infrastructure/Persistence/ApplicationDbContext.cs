@@ -54,30 +54,51 @@ namespace AstroFinance.Infrastructure.Persistence
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            foreach (var entry in ChangeTracker.Entries<BaseAuditableEntity>())
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.Entity.CreatedBy = _currentUserService.UserId ?? Guid.Empty.ToString();
-                        entry.Entity.Created = _dateTime.Now;
-                        break;
+           foreach (var entry in ChangeTracker.Entries<BaseAuditableEntity>())
+{
+    switch (entry.State)
+{
+    case EntityState.Added:
+        entry.Entity.CreatedBy = _currentUserService.UserId ?? Guid.Empty;
+        entry.Entity.CreatedAt = _dateTime.Now;
+        break;
 
-                    case EntityState.Modified:
-                        entry.Entity.LastModifiedBy = _currentUserService.UserId ?? Guid.Empty.ToString();
-                        entry.Entity.LastModified = _dateTime.Now;
-                        break;
-                }
-            }
+    case EntityState.Modified:
+        entry.Entity.LastModifiedBy = _currentUserService.UserId ?? Guid.Empty;
+        entry.Entity.LastModifiedAt = _dateTime.Now;
+        break;
+}
+}
 
             return await base.SaveChangesAsync(cancellationToken);
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
             base.OnModelCreating(builder);
+
+            // Configure the User entity explicitly
+            builder.Entity<User>(entity =>
+            {
+                entity.ToTable("users");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Email).HasColumnName("email");
+                entity.Property(e => e.FirstName).HasColumnName("first_name");
+                entity.Property(e => e.LastName).HasColumnName("last_name");
+                entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
+                entity.Property(e => e.Role).HasColumnName("role");
+                entity.Property(e => e.IsActive).HasColumnName("is_active");
+                entity.Property(e => e.LastLoginDate).HasColumnName("last_login_date");
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+                entity.Property(e => e.LastModifiedAt).HasColumnName("last_modified_at");
+                entity.Property(e => e.LastModifiedBy).HasColumnName("last_modified_by");
+            });
+
+            // Automatically apply all IEntityTypeConfiguration<T> configurations
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }

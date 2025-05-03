@@ -64,7 +64,7 @@ namespace AstroFinance.Application.Transactions.Commands.CreateTransaction
                 Amount = request.Amount,
                 Date = request.TransactionDate ?? _dateTime.Now,
                 Description = request.Description,
-                Created = _dateTime.Now,
+                CreatedAt = _dateTime.Now,
                 CreatedBy = _currentUserService.UserId
             };
 
