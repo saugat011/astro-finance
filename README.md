@@ -74,7 +74,7 @@ The application uses PostgreSQL for data storage:
    psql -U postgres -d astrofinance -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
    ```
 
-**Note:** This project uses direct SQL migrations rather than Entity Framework migrations. You do not need to run `dotnet ef database update` or similar commands. The database schema is managed entirely through the SQL scripts in the `database/migrations` directory.
+**Note:** This project uses direct SQL migrations rather than Entity Framework migrations. You do not need to run `dotnet ef database update` or similar commands. The database schema is managed entirely through the SQL scripts in the `database/migrations` directory. after seeding drop the constant of audit_log audit_logs_changed_by_fkey
 
 #### Additional Database Management Scripts
 
@@ -115,7 +115,7 @@ These scripts support environment variables and command-line arguments for custo
    ```
 
 4. Configure the application:
-   - Create an `appsettings.Development.json` file in the `src/AstroFinance.API` directory with the following content:
+   - Create or update an `appsettings.Development.json` file in the `src/AstroFinance.API` directory with the following content:
    ```json
    {
      "ConnectionStrings": {
