@@ -93,10 +93,10 @@ namespace AstroFinance.Infrastructure.Identity
         public async Task<AuthenticationResult> AuthenticateAsync(string email, string password)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user == null)
-            {
-                return AuthenticationResult.FailureResult("User not found.");
-            }
+           if (user == null )
+{
+    return AuthenticationResult.FailureResult("Invalid credentials.");
+}
 
             if (!user.IsActive)
             {

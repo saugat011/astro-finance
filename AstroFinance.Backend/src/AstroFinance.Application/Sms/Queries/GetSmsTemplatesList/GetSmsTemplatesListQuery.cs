@@ -52,9 +52,9 @@ namespace AstroFinance.Application.Sms.Queries.GetSmsTemplatesList
                     Id = t.Id,
                     Name = t.Name,
                     Content = t.Content,
-                    Created = t.Created,
+                    CreatedAt = t.CreatedAt,
                     CreatedBy = t.CreatedBy,
-                    LastModified = t.LastModified,
+                    LastModifiedAt = t.LastModifiedAt,
                     LastModifiedBy = t.LastModifiedBy
                 })
                 .ToListAsync(cancellationToken);
@@ -84,9 +84,9 @@ namespace AstroFinance.Application.Sms.Queries.GetSmsTemplatesList
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
-        public DateTime Created { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? LastModified { get; set; }
-        public string? LastModifiedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public Guid? CreatedBy { get; set; }
+        public DateTime? LastModifiedAt { get; set; }
+        public Guid? LastModifiedBy { get; set; }
     }
 }

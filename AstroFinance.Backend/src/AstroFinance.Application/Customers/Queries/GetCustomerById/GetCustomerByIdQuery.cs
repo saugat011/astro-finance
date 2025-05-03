@@ -58,7 +58,7 @@ namespace AstroFinance.Application.Customers.Queries.GetCustomerById
                 Address = entity.Address,
                 IdentificationNumber = entity.IdentificationNumber,
                 IdentificationType = entity.IdentificationType,
-                CreatedAt = entity.Created,
+                CreatedAt = entity.CreatedAt,
                 LoanCount = loanCount,
                 ActiveLoanCount = activeLoanCount,
                 TotalLoanAmount = totalLoanAmount

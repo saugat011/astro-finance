@@ -30,12 +30,12 @@ namespace AstroFinance.Application.Reports.Queries.GetLoanSummaryReport
 
             if (request.FromDate.HasValue)
             {
-                query = query.Where(l => l.Created >= request.FromDate.Value);
+                query = query.Where(l => l.CreatedAt >= request.FromDate.Value);
             }
 
             if (request.ToDate.HasValue)
             {
-                query = query.Where(l => l.Created <= request.ToDate.Value);
+                query = query.Where(l => l.CreatedAt <= request.ToDate.Value);
             }
 
             var loans = await query.ToListAsync(cancellationToken);
@@ -60,7 +60,7 @@ namespace AstroFinance.Application.Reports.Queries.GetLoanSummaryReport
 
             // Group by month
             var monthlySummary = loans
-                .GroupBy(l => new { l.Created.Year, l.Created.Month })
+                .GroupBy(l => new { l.CreatedAt.Year, l.CreatedAt.Month })
                 .Select(g => new MonthlyLoanSummaryDto
                 {
                     Year = g.Key.Year,

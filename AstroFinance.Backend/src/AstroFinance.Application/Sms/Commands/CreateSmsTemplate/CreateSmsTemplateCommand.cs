@@ -36,7 +36,7 @@ namespace AstroFinance.Application.Sms.Commands.CreateSmsTemplate
                 Id = Guid.NewGuid(),
                 Name = request.Name,
                 Content = request.Content,
-                Created = _dateTime.Now,
+                CreatedAt = _dateTime.Now,
                 CreatedBy = _currentUserService.UserId
             };
 
@@ -48,9 +48,9 @@ namespace AstroFinance.Application.Sms.Commands.CreateSmsTemplate
                 Id = entity.Id,
                 Name = entity.Name,
                 Content = entity.Content,
-                Created = entity.Created,
+                CreatedAt = entity.CreatedAt,
                 CreatedBy = entity.CreatedBy,
-                LastModified = entity.LastModified,
+                LastModifiedAt = entity.LastModifiedAt,
                 LastModifiedBy = entity.LastModifiedBy
             };
         }
