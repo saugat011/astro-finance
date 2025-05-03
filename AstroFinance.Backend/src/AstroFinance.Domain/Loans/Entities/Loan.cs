@@ -94,7 +94,7 @@ namespace AstroFinance.Domain.Loans.Entities
                     
                     var payment = new PaymentSchedule
                     {
-                        LoanId = Id,
+                        LoanId = Id.ToString(),
                         DueDate = dueDate,
                         Amount = emi,
                         Principal = monthlyPrincipal,
@@ -119,7 +119,7 @@ namespace AstroFinance.Domain.Loans.Entities
                     
                     var payment = new PaymentSchedule
                     {
-                        LoanId = Id,
+                        LoanId = Id.ToString(),
                         DueDate = dueDate,
                         Amount = emi,
                         Principal = principal,
