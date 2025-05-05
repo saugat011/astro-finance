@@ -53,6 +53,16 @@ stages:
             inputs:
               versionSpec: '18.x'
 
+          - task: DownloadSecureFile@1
+            name: DownloadEnvFile
+            displayName: 'Download .env file'
+            inputs:
+              secureFile: '.env'
+
+          - script: |
+              move "$(DownloadEnvFile.secureFilePath)" "$(frontendPath)\.env"
+            displayName: 'Move .env file to frontend directory'
+
           - script: |
               cd $(frontendPath)
               npm install --legacy-peer-deps
