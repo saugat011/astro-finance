@@ -19,7 +19,7 @@ stages:
           - task: UseDotNet@2
             inputs:
               packageType: 'sdk'
-              version: '8.x.x'  #  .NET version 
+              version: '8.x.x'  
 
           - task: DotNetCoreCLI@2
             displayName: 'Restore NuGet Packages'
