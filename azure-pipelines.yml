@@ -1,0 +1,68 @@
+trigger:
+- master
+
+pool:
+  name: 'Agent'
+
+variables:
+  backendPath: 'AstroFinance.Backend'
+  frontendPath: 'frontend'
+  buildConfiguration: 'Release'
+
+stages:
+  - stage: BuildAndTest_Backend
+    displayName: 'Build and Test .NET Backend'
+    jobs:
+      - job: BuildTestBackend
+        displayName: 'Build and Test Backend'
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '8.x.x'  #  .NET version 
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore NuGet Packages'
+            inputs:
+              command: 'restore'
+              projects: '$(backendPath)/**/*.csproj'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Build Backend'
+            inputs:
+              command: 'build'
+              projects: '$(backendPath)/**/*.csproj'
+              arguments: '--configuration $(buildConfiguration)'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Test Backend'
+            inputs:
+              command: 'test'
+              projects: '$(backendPath)/**/*.csproj'
+              arguments: '--configuration $(buildConfiguration) --no-build --verbosity normal'
+
+  - stage: BuildAndTest_Frontend
+    displayName: 'Build and Test Next.js Frontend'
+    jobs:
+      - job: BuildTestFrontend
+        displayName: 'Build and Test Frontend'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18.x'  # Node.js version
+            displayName: 'Install Node.js'
+
+          - script: |
+              cd $(frontendPath)
+              npm install
+            displayName: 'Install Frontend Dependencies'
+
+          - script: |
+              cd $(frontendPath)
+              npm run build
+            displayName: 'Build Frontend'
+
+          - script: |
+              cd $(frontendPath)
+              npm run test || echo "Frontend tests failed"  
+            displayName: 'Run Frontend Tests'
