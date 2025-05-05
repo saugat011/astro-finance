@@ -1,5 +1,5 @@
 trigger:
-- master
+  - master
 
 pool:
   name: 'Agent'
@@ -17,9 +17,10 @@ stages:
         displayName: 'Build and Test Backend'
         steps:
           - task: UseDotNet@2
+            displayName: 'Install .NET SDK'
             inputs:
               packageType: 'sdk'
-              version: '8.X.X'  
+              version: '8.x'  
 
           - task: DotNetCoreCLI@2
             displayName: 'Restore NuGet Packages'
@@ -48,9 +49,9 @@ stages:
         displayName: 'Build and Test Frontend'
         steps:
           - task: NodeTool@0
-            inputs:
-              versionSpec: '18.x'  # Node.js version
             displayName: 'Install Node.js'
+            inputs:
+              versionSpec: '18.x'
 
           - script: |
               cd $(frontendPath)
@@ -64,5 +65,5 @@ stages:
 
           - script: |
               cd $(frontendPath)
-              npm run test || echo "Frontend tests failed"  
+              npm run test || echo "Frontend tests failed"
             displayName: 'Run Frontend Tests'
